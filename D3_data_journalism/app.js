@@ -6,7 +6,7 @@ var margin = {
   top: 20,
   right: 40,
   bottom: 60,
-  left: 100
+  left: 50
 };
 
 var width = svgWidth - margin.left - margin.right;
@@ -37,7 +37,7 @@ d3.csv("data.csv").then(function(data) {
     // Create scale functions
     var xLinearScale = d3.scaleLinear()
       .domain([0, d3.max(data, d => d.poverty)])
-      .range([0, width]);
+      .range([0, width / 1.4]);
 
     var yLinearScale = d3.scaleLinear()
       .domain([0, d3.max(data, d => d.obesity)])
@@ -88,14 +88,14 @@ d3.csv("data.csv").then(function(data) {
     // Create axes labels
     chartGroup.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", 0 - margin.left + 20)
+        .attr("y", 0 - margin.left)
         .attr("x", 0 - (height / 1.75))
-        .attr("dy", "2em")
+        .attr("dy", "1em")
         .attr("class", "axisText")
         .text("Obesity (%))");
 
     chartGroup.append("text")
-        .attr("transform", `translate(${width / 2.75}, ${height + margin.top + 20})`)
+        .attr("transform", `translate(${width / 4}, ${height + margin.top + 25})`)
         .attr("class", "axisText")
         .text("Household Income (Median)");
     }).catch(function(error) {
