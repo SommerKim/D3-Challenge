@@ -36,11 +36,11 @@ d3.csv("data.csv").then(function(data) {
 
     // Create scale functions
     var xLinearScale = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.obese)])
+      .domain([0, d3.max(data, d => d.poverty)])
       .range([0, width]);
 
     var yLinearScale = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.poverty)])
+      .domain([0, d3.max(data, d => d.obesity)])
       .range([height, 0]);
 
     // Create axis functions
@@ -56,5 +56,16 @@ d3.csv("data.csv").then(function(data) {
       .call(leftAxis);
 
     // Create circles
+    var circlesGroup = chartGroup.selectAll("circle")
+      .data(data)
+      .enter()
+      .append("circle")
+      .attr("cx", d => xLinearScale(d.poverty))
+      .attr("cy", d => yLinearScale(d.obesity))
+      .attr("r", "15")
+      .attr("fill", "blue")
+      .attr("opacity", ".5");
+
+    // Initialize tooltip
 
 }
