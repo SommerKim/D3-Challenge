@@ -48,5 +48,13 @@ d3.csv("data.csv").then(function(data) {
     var leftAxis = d3.axisLeft(yLinearScale);
 
     // Append axes to chart
+    chartGroup.append("g")
+      .attr("transform", `translate(0, ${height})`)
+      .call(bottomAxis);
+
+    chartGroup.append("g")
+      .call(leftAxis);
+
+    // Create circles
 
 }
