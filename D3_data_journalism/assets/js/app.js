@@ -44,5 +44,9 @@ d3.csv("data.csv").then(function(data) {
       .range([height, 0]);
 
     // Create axis functions
+    var bottomAxis = d3.axisBottom(xLinearScale);
+    var leftAxis = d3.axisLeft(yLinearScale);
+
+    // Append axes to chart
 
 }
