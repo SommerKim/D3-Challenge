@@ -22,4 +22,19 @@ var chartGroup = svg.append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
 // Import Data
-d3.csv("data.csv").then(function(data) {}
+d3.csv("data.csv").then(function(data) {
+
+    // Parse data
+    data.forEach(function(data) {
+        data.obesity = +data.obesity;
+        data.smokes = +data.smokes;
+        data.healthcareLow = +data.healthcareLow;
+        data.poverty = +data.poverty;
+        data.age = +data.age;
+        data.income = +data.income;
+      });
+
+    // Create scale functions
+    
+
+}
