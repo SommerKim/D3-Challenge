@@ -35,6 +35,14 @@ d3.csv("data.csv").then(function(data) {
       });
 
     // Create scale functions
-    
+    var xLinearScale = d3.scaleLinear()
+      .domain([0, d3.max(data, d => d.obese)])
+      .range([0, width]);
+
+    var yLinearScale = d3.scaleLinear()
+      .domain([0, d3.max(data, d => d.poverty)])
+      .range([height, 0]);
+
+    // Create axis functions
 
 }
