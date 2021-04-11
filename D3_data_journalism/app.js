@@ -21,6 +21,21 @@ var svg = d3.select("#scatter")
 var chartGroup = svg.append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+// Initial parameters
+var chosenXAxis = "poverty";
+
+// Updating x-scale based on user choice
+function xScale(data, chosenXAxis) {
+  var xLinearScale = d3.scaleLinear()
+    .domain([d3.min(data, d => d[chosenXAxis]),
+      d3.max(data, d => d[chosenXAxis])
+    ])
+    .range([0, width / 1.4]);
+  
+  return xLinearScale;
+  
+}
+
 // Import Data
 d3.csv("data.csv").then(function(data) {
 
@@ -36,7 +51,7 @@ d3.csv("data.csv").then(function(data) {
 
     // Create scale functions
     var xLinearScale = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.poverty)])
+      .domain([6, d3.max(data, d => d.poverty)])
       .range([0, width / 1.4]);
 
     var yLinearScale = d3.scaleLinear()
@@ -62,16 +77,28 @@ d3.csv("data.csv").then(function(data) {
       .append("circle")
       .attr("cx", d => xLinearScale(d.poverty))
       .attr("cy", d => yLinearScale(d.obesity))
-      .attr("r", "15")
+      .attr("r", "10")
       .attr("fill", "blue")
-      .attr("opacity", ".5");
+      .attr("opacity", ".5")
+
+    chartGroup.selectAll("text")
+      .data(data)
+      .enter()
+      .append("text")
+      .text(d => d.abbr)
+      .attr("x", d => xLinearScale(d.poverty))
+      .attr("y", d => yLinearScale(d.obesity) + 4)
+      .attr("font-size", "10px")
+      .attr("fill", "white")
+      .attr("text-anchor", "middle");
+    
 
     // Initialize tooltip
     var toolTip = d3.tip()
       .attr("class", "tooltip")
       .offset([80, -60])
       .html(function(d) {
-          return(`In Poverty (%): ${d.poverty}<br>Obesity (%): ${d.obesity}`);
+          return(`State: ${d.abbr}<br>In Poverty (%): ${d.poverty}<br>Obesity (%): ${d.obesity}`);
       });
 
     // Create tooltip in chart
