@@ -67,5 +67,17 @@ d3.csv("data.csv").then(function(data) {
       .attr("opacity", ".5");
 
     // Initialize tooltip
+    var toolTip = d3.tip()
+      .attr("class", "tooltip")
+      .offset([80, -60])
+      .html(function(d) {
+          return(`In Poverty (%): ${d.poverty}<br>Obesity (%): ${d.obesity}`);
+      });
+
+    // Create tooltip in chart
+    chartGroup.call(toolTip);
+
+    // Create event listeners
+    
 
 }
