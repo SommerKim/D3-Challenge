@@ -78,6 +78,13 @@ d3.csv("data.csv").then(function(data) {
     chartGroup.call(toolTip);
 
     // Create event listeners
+    circlesGroup.on("click", function(data) {
+        toolTip.show(data, this);
+    })
+        .on("mouseout", function(data, index) {
+            toolTip.hide(data);
+        });
     
+    // Create axes labels
 
 }
