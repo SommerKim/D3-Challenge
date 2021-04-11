@@ -13,7 +13,7 @@ var width = svgWidth - margin.left - margin.right;
 var height = svgHeight - margin.top - margin.bottom;
 
 // Create an SVG wrapper
-var svg = d3.select(".chart")
+var svg = d3.select("#scatter")
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight);
@@ -88,16 +88,16 @@ d3.csv("data.csv").then(function(data) {
     // Create axes labels
     chartGroup.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", 0 - margin.left + 10)
-        .attr("x", 0 - (height / 2))
-        .attr("dy", "1em")
+        .attr("y", 0 - margin.left + 20)
+        .attr("x", 0 - (height / 1.75))
+        .attr("dy", "2em")
         .attr("class", "axisText")
-        .text("Household Income (Median)");
+        .text("Obesity (%))");
 
     chartGroup.append("text")
-        .attr("transform", `translate(${width/2}, ${height + margin.top + 10})`)
+        .attr("transform", `translate(${width / 2.75}, ${height + margin.top + 20})`)
         .attr("class", "axisText")
-        .text("Obesity (%)");
+        .text("Household Income (Median)");
     }).catch(function(error) {
         console.log(error);
     });
