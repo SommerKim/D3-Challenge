@@ -13,16 +13,29 @@ var width = svgWidth - margin.left - margin.right;
 var height = svgHeight - margin.top - margin.bottom;
 
 // Create an SVG wrapper
-var svg = d3.select("#scatter")
+var svg = d3
+  .select("#scatter")
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight);
 
-var chartGroup = svg.append("g")
+// Append svg group  
+var chartGroup = svg
+  .append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
 // Initial parameters
-var chosenXAxis = "poverty";
+var chosenXAxis = function(choice) {
+  if choice === d.poverty) {
+    chosenXAxis = "poverty";
+  }
+  if choice === d.age {
+    chosenXAxis = "age";
+  }
+  else {
+    chosenXAxis = "income"
+  }
+};
 
 // Updating x-scale based on user choice
 function xScale(data, chosenXAxis) {
@@ -33,11 +46,68 @@ function xScale(data, chosenXAxis) {
     .range([0, width / 1.4]);
   
   return xLinearScale;
-  
+
+}
+
+// Updating X Axis based on user choice
+function renderAxes(newXScale, xAxis) {
+  var bottomAxis = d3.axisBottom(newXScale);
+
+  xAxis.transition()
+    .duration(1000)
+    .call(bottomAxis);
+
+  return xAxis;
+}
+
+// Updating circles group with transition
+function renderCircles(circlesGroup, newXScale, chosenXAxis) {
+
+  circlesGroup.transition()
+    .duration(1000)
+    .attr("cx", d => newXScale(d[chosenXAxis]));
+
+  return circlesGroup;
+}
+
+// Updating circles group with new tooltip
+function updateToolTip(chosenXAxis, circlesGroup) {
+
+  var label;
+
+  if (chosenXAxis === "poverty") {
+    label = "Poverty (%):";
+  }
+  if (chosenXAxis === "age") {
+    label = "Age (Median):";
+  }
+  else {
+    label = "Household Income (Median):";
+  }
+
+  var toolTip = d3.tip()
+    .attr("class", "tooltip")
+    .offset([80, -60])
+    .html(function(d) {
+      return (`${label} ${d[chosenXAxis]}`);
+    });
+
+  circlesGroup.call(toolTip);
+
+  circlesGroup.on("click", function(data) {
+    toolTip.show(data);
+  })
+    // onmouseout event
+    .on("mouseout", function(data, index) {
+      toolTip.hide(data);
+    });
+
+  return circlesGroup;
 }
 
 // Import Data
-d3.csv("data.csv").then(function(data) {
+d3.csv("data.csv").then(function(data, err) {
+  if (err) throw (err);
 
     // Parse data
     data.forEach(function(data) {
@@ -50,24 +120,22 @@ d3.csv("data.csv").then(function(data) {
       });
 
     // Create scale functions
-    var xLinearScale = d3.scaleLinear()
-      .domain([6, d3.max(data, d => d.poverty)])
-      .range([0, width / 1.4]);
+    var xLinearScale = xScale(data, chosenXAxis);
 
-    var yLinearScale = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.obesity)])
-      .range([height, 0]);
+    var yLinearScale = yScale(data, chosenYAxis);
 
     // Create axis functions
     var bottomAxis = d3.axisBottom(xLinearScale);
     var leftAxis = d3.axisLeft(yLinearScale);
 
     // Append axes to chart
-    chartGroup.append("g")
+    var xAxis = chartGroup.append("g")
+      .classed("x-axis", true)
       .attr("transform", `translate(0, ${height})`)
       .call(bottomAxis);
 
     chartGroup.append("g")
+      .classed("y-axis", true)
       .call(leftAxis);
 
     // Create circles
@@ -75,8 +143,8 @@ d3.csv("data.csv").then(function(data) {
       .data(data)
       .enter()
       .append("circle")
-      .attr("cx", d => xLinearScale(d.poverty))
-      .attr("cy", d => yLinearScale(d.obesity))
+      .attr("cx", d => xLinearScale(d[chosenXAxis]))
+      .attr("cy", d => yLinearScale(d[chosenYAxis]))
       .attr("r", "10")
       .attr("fill", "blue")
       .attr("opacity", ".5")
@@ -91,40 +159,115 @@ d3.csv("data.csv").then(function(data) {
       .attr("font-size", "10px")
       .attr("fill", "white")
       .attr("text-anchor", "middle");
-    
 
-    // Initialize tooltip
-    var toolTip = d3.tip()
-      .attr("class", "tooltip")
-      .offset([80, -60])
-      .html(function(d) {
-          return(`State: ${d.abbr}<br>In Poverty (%): ${d.poverty}<br>Obesity (%): ${d.obesity}`);
+    var labelsGroup = chartGroup.append("g")
+      .attr("transform", `translate(${width /1.4}, ${height + 20})`);
+    
+    var povertyLabel = labelsGroup.append("text")
+      .attr("x", 0)
+      .attr("y", 20)
+      .attr("value", "poverty")
+      .classed("active", true)
+      .text("Poverty (%)")
+      
+    var ageLabel = labelsGroup.append("text")
+    .attr("x", 0)
+    .attr("y", 40)
+    .attr("value", "age")
+    .classed("active", false)
+    .text("Age (Median)")
+
+    var incomeLabel = labelsGroup.append("text")
+      .attr("x", 0)
+      .attr("y", 20)
+      .attr("value", "income")
+      .classed("active", false)
+      .text("Household Income (Median)")
+
+    var circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+
+    // X Axis event listener
+    labelsGroup.selectAll("text")
+      .on("click", function() {
+        var value = d3.select(this).attr("value");
+        if (value !== chosenXAxis) {
+          chosenXAxis = value;
+          xLinearScale = xScale(hairData, chosenXAxis);
+          xAxis = renderAxes(xLinearScale, xAxis);
+          circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis);
+          circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+
+          // Change classes to match chosen text
+          if (chosenXAxis === "age") {
+            ageLabel
+              .classed("active", true)
+              .classed("inactive", false);
+            povertyLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            incomeLabel
+              .classed("active", false)
+              .classed("inactive", true);
+          }
+          if (chosenXAxis === "income") {
+            incomeLabel
+              .classed("active", true)
+              .classed("inactive", false);
+            povertyLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            ageLabel
+              .classed("active", false)
+              .classed("inactive", true);
+          }
+          if (chosenXAxis) === "poverty") {
+            povertyLabel
+              .classed("active", true)
+              .classed("inactive", false);
+            ageLabel
+              .classed("active", false)
+              .classed("inactive", true);
+            incomeLabel
+              .classed("active", false)
+              .classed("inactive", true);
+        }
       });
-
-    // Create tooltip in chart
-    chartGroup.call(toolTip);
-
-    // Create event listeners
-    circlesGroup.on("click", function(data) {
-        toolTip.show(data, this);
-    })
-        .on("mouseout", function(data, index) {
-            toolTip.hide(data);
-        });
-    
-    // Create axes labels
-    chartGroup.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 0 - margin.left)
-        .attr("x", 0 - (height / 1.75))
-        .attr("dy", "1em")
-        .attr("class", "axisText")
-        .text("Obesity (%))");
-
-    chartGroup.append("text")
-        .attr("transform", `translate(${width / 4}, ${height + margin.top + 25})`)
-        .attr("class", "axisText")
-        .text("Household Income (Median)");
     }).catch(function(error) {
-        console.log(error);
+      console.log(error);
     });
+
+    // // Initialize tooltip
+    // var toolTip = d3.tip()
+    //   .attr("class", "tooltip")
+    //   .offset([80, -60])
+    //   .html(function(d) {
+    //       return(`State: ${d.abbr}<br>In Poverty (%): ${d.poverty}<br>Obesity (%): ${d.obesity}`);
+    //   });
+
+    // // Create tooltip in chart
+    // chartGroup.call(toolTip);
+
+    // // Create event listeners
+    // circlesGroup.on("click", function(data) {
+    //     toolTip.show(data, this);
+    // })
+    //     .on("mouseout", function(data, index) {
+    //         toolTip.hide(data);
+    //     });
+    
+    // // Create axes labels
+    // chartGroup.append("text")
+    //     .attr("transform", "rotate(-90)")
+    //     .attr("y", 0 - margin.left)
+    //     .attr("x", 0 - (height / 1.75))
+    //     .attr("dy", "1em")
+    //     .attr("class", "axisText")
+    //     .text("Obesity (%))");
+
+    // chartGroup.append("text")
+    //     .attr("transform", `translate(${width / 4}, ${height + margin.top + 25})`)
+    //     .attr("class", "axisText")
+    //     .text("Household Income (Median)");
+    // }).catch(function(error) {
+    //     console.log(error);
+    // });
