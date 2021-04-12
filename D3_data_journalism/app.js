@@ -25,17 +25,21 @@ var chartGroup = svg
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
 // Initial parameters
-var chosenXAxis = function(choice) {
-  if choice === d.poverty) {
-    chosenXAxis = "poverty";
-  }
-  if choice === d.age {
-    chosenXAxis = "age";
-  }
-  else {
-    chosenXAxis = "income"
-  }
-};
+var chosenXAxis = "poverty";
+
+
+
+// function(choice) {
+//   if choice === d.poverty) {
+//     chosenXAxis = "poverty";
+//   }
+//   if choice === d.age {
+//     chosenXAxis = "age";
+//   }
+//   else {
+//     chosenXAxis = "income"
+//   }
+// };
 
 // Updating x-scale based on user choice
 function xScale(data, chosenXAxis) {
@@ -122,7 +126,9 @@ d3.csv("data.csv").then(function(data, err) {
     // Create scale functions
     var xLinearScale = xScale(data, chosenXAxis);
 
-    var yLinearScale = yScale(data, chosenYAxis);
+    var yLinearScale = d3.scaleLinear()
+      .domain([0, d3.max(data, d => d.obesity)])
+      .range([height, 0]);
 
     // Create axis functions
     var bottomAxis = d3.axisBottom(xLinearScale);
@@ -135,7 +141,7 @@ d3.csv("data.csv").then(function(data, err) {
       .call(bottomAxis);
 
     chartGroup.append("g")
-      .classed("y-axis", true)
+      // .classed("y-axis", true)
       .call(leftAxis);
 
     // Create circles
@@ -144,21 +150,21 @@ d3.csv("data.csv").then(function(data, err) {
       .enter()
       .append("circle")
       .attr("cx", d => xLinearScale(d[chosenXAxis]))
-      .attr("cy", d => yLinearScale(d[chosenYAxis]))
+      .attr("cy", d => yLinearScale(d.obesity))
       .attr("r", "10")
       .attr("fill", "blue")
       .attr("opacity", ".5")
 
-    chartGroup.selectAll("text")
-      .data(data)
-      .enter()
-      .append("text")
-      .text(d => d.abbr)
-      .attr("x", d => xLinearScale(d.poverty))
-      .attr("y", d => yLinearScale(d.obesity) + 4)
-      .attr("font-size", "10px")
-      .attr("fill", "white")
-      .attr("text-anchor", "middle");
+    // chartGroup.selectAll("text")
+    //   .data(data)
+    //   .enter()
+    //   .append("text")
+    //   .text(d => d.abbr)
+    //   .attr("x", d => xLinearScale(d.poverty))
+    //   .attr("y", d => yLinearScale(d.obesity) + 4)
+    //   .attr("font-size", "10px")
+    //   .attr("fill", "white")
+    //   .attr("text-anchor", "middle");
 
     var labelsGroup = chartGroup.append("g")
       .attr("transform", `translate(${width /1.4}, ${height + 20})`);
@@ -220,7 +226,7 @@ d3.csv("data.csv").then(function(data, err) {
               .classed("active", false)
               .classed("inactive", true);
           }
-          if (chosenXAxis) === "poverty") {
+          if (chosenXAxis === "poverty") {
             povertyLabel
               .classed("active", true)
               .classed("inactive", false);
@@ -230,6 +236,7 @@ d3.csv("data.csv").then(function(data, err) {
             incomeLabel
               .classed("active", false)
               .classed("inactive", true);
+          }
         }
       });
     }).catch(function(error) {
