@@ -26,20 +26,7 @@ var chartGroup = svg
 
 // Initial parameters
 var chosenXAxis = "poverty";
-
-
-
-// function(choice) {
-//   if choice === d.poverty) {
-//     chosenXAxis = "poverty";
-//   }
-//   if choice === d.age {
-//     chosenXAxis = "age";
-//   }
-//   else {
-//     chosenXAxis = "income"
-//   }
-// };
+var chosenYAxis = "obesity";
 
 // Updating x-scale based on user choice
 function xScale(data, chosenXAxis) {
@@ -50,6 +37,18 @@ function xScale(data, chosenXAxis) {
     .range([0, width / 1.4]);
   
   return xLinearScale;
+
+}
+
+// Updating x-scale based on user choice
+function yScale(data, chosenYAxis) {
+  var yLinearScale = d3.scaleLinear()
+    .domain([d3.min(data, d => d[chosenYAxis]),
+      d3.max(data, d => d[chosenYAxis])
+    ])
+    .range([0, width / 1.4]);
+  
+  return yLinearScale;
 
 }
 
