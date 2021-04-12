@@ -5,7 +5,7 @@ var svgHeight = 500;
 var margin = {
   top: 20,
   right: 40,
-  bottom: 60,
+  bottom: 100,
   left: 50
 };
 
@@ -155,19 +155,19 @@ d3.csv("data.csv").then(function(data, err) {
       .attr("fill", "blue")
       .attr("opacity", ".5")
 
-    // chartGroup.selectAll("text")
-    //   .data(data)
-    //   .enter()
-    //   .append("text")
-    //   .text(d => d.abbr)
-    //   .attr("x", d => xLinearScale(d.poverty))
-    //   .attr("y", d => yLinearScale(d.obesity) + 4)
-    //   .attr("font-size", "10px")
-    //   .attr("fill", "white")
-    //   .attr("text-anchor", "middle");
+    chartGroup.selectAll("text")
+      .data(data)
+      .enter()
+      .append("text")
+      .text(d => d.abbr)
+      .attr("x", d => xLinearScale(d.poverty))
+      .attr("y", d => yLinearScale(d.obesity) + 4)
+      .attr("font-size", "10px")
+      .attr("fill", "white")
+      .attr("text-anchor", "middle");
 
     var labelsGroup = chartGroup.append("g")
-      .attr("transform", `translate(${width /1.4}, ${height + 20})`);
+      .attr("transform", `translate(${width / 3}, ${height + 20})`);
     
     var povertyLabel = labelsGroup.append("text")
       .attr("x", 0)
@@ -185,7 +185,7 @@ d3.csv("data.csv").then(function(data, err) {
 
     var incomeLabel = labelsGroup.append("text")
       .attr("x", 0)
-      .attr("y", 20)
+      .attr("y", 60)
       .attr("value", "income")
       .classed("active", false)
       .text("Household Income (Median)")
@@ -198,7 +198,7 @@ d3.csv("data.csv").then(function(data, err) {
         var value = d3.select(this).attr("value");
         if (value !== chosenXAxis) {
           chosenXAxis = value;
-          xLinearScale = xScale(hairData, chosenXAxis);
+          xLinearScale = xScale(data, chosenXAxis);
           xAxis = renderAxes(xLinearScale, xAxis);
           circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis);
           circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
