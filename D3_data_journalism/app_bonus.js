@@ -178,6 +178,20 @@ d3.csv("data.csv").then(function(data, err) {
 
   // updateToolTip function above csv import
   var circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+  var circleLabels = chartGroup.selectAll(null)
+    .data(data)
+    .enter()
+    .append("text");
+
+  circleLabels
+    .attr("x", d => xLinearScale(d[chosenXAxis]))
+    .attr("y", d => yLinearScale(d.obesity) + 4)
+    .text(d => d.abbr)
+    .attr("font-family", "sans-serif")
+    .attr("font-size", "10px")
+    .attr("text-anchor", "middle")
+    .attr("fill", "white");
+
 
   // x axis labels event listener
   labelsGroup.selectAll("text")
@@ -194,6 +208,16 @@ d3.csv("data.csv").then(function(data, err) {
         // functions here found above csv import
         // updates x scale for new data
         xLinearScale = xScale(data, chosenXAxis);
+
+        circleLabels
+        .attr("x", d => xLinearScale(d[chosenXAxis]))
+        .attr("y", d => yLinearScale(d.obesity) + 4)
+        .text(d => d.abbr)
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "10px")
+        .attr("text-anchor", "middle")
+        .attr("fill", "white");
+
 
         // updates x axis with transition
         xAxis = renderAxes(xLinearScale, xAxis);
