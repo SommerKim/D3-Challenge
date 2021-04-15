@@ -3,7 +3,7 @@ var svgHeight = 500;
 
 var margin = {
   top: 20,
-  right: 40,
+  right: 170,
   bottom: 100,
   left: 100
 };
@@ -30,7 +30,7 @@ var chosenXAxis = "poverty";
 // function used for updating x-scale var upon click on axis label
 function xScale(data, chosenXAxis) {
   var xLinearScale = d3.scaleLinear()
-    .domain([d3.min(data, d => d[chosenXAxis]), d3.max(data, d => d[chosenXAxis])])
+    .domain([d3.min(data, d => d[chosenXAxis] / 1.1), d3.max(data, d => d[chosenXAxis] * 1.05)])
     .range([0, (width / 1.25)]);
 
   return xLinearScale;
