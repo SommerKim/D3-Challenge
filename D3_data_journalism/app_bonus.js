@@ -40,7 +40,7 @@ function xScale(data, chosenXAxis) {
 // function used for updating y-scale var upon click on axis label
 function yScale(data, chosenYAxis) {
   var yLinearScale = d3.scaleLinear()
-    .domain([d3.min(data, d => d[chosenYAxis] / 1.1), d3.max(data, d => d[chosenYAxis] * 1.05)])
+    .domain([d3.min(data, d => d[chosenYAxis] / 6.5), d3.max(data, d => d[chosenYAxis])])
     .range([height, 0]);
 
   return yLinearScale;
@@ -71,13 +71,22 @@ function renderYAxes(newYScale, yAxis) {
 
 // function used for updating circles group with a transition to
 // new circles
-function renderCircles(circlesGroup, newXScale, chosenXAxis) {
+function renderXCircles(circlesXGroup, newXScale, chosenXAxis) {
 
-  circlesGroup.transition()
+  circlesXGroup.transition()
     .duration(1000)
     .attr("cx", d => newXScale(d[chosenXAxis]));
 
-  return circlesGroup;
+  return circlesXGroup;
+}
+
+function renderYCircles(circlesYGroup, newYScale, chosenYAxis) {
+
+  circlesYGroup.transition()
+    .duration(1000)
+    .attr("cy", d => newYScale(d[chosenYAxis]));
+
+  return circlesYGroup;
 }
 
 // function used for updating circles group with new tooltip
@@ -149,6 +158,7 @@ d3.csv("data.csv").then(function(data, err) {
   var yAxis = chartGroup.append("g")
     .classed("y-axis", true)
     .call(leftAxis);
+
   // // append y axis
   // chartGroup.append("g")
   //   .call(leftAxis);
@@ -160,7 +170,7 @@ d3.csv("data.csv").then(function(data, err) {
     .append("circle")
     .classed("stateCircle", true)
     .attr("cx", d => xLinearScale(d[chosenXAxis]))
-    .attr("cy", d => yLinearScale(d.obesity))
+    .attr("cy", d => yLinearScale(d[chosenYAxis]))
     .attr("r", 10)
     .attr("opacity", ".7");
 
@@ -171,7 +181,7 @@ d3.csv("data.csv").then(function(data, err) {
     .append("text")
     .classed("stateText", true)
     .attr("x", d => xLinearScale(d[chosenXAxis]))
-    .attr("y", d => yLinearScale(d.obesity) + 4)
+    .attr("y", d => yLinearScale(d[chosenYAxis]) + 4)
     .text(d => d.abbr)
     .attr("font-size", "10px");
 
@@ -252,9 +262,9 @@ d3.csv("data.csv").then(function(data, err) {
 
         xLinearScale = xScale(data, chosenXAxis);
 
-        xAxis = renderAxes(xLinearScale, xAxis);
+        xAxis = renderXAxes(xLinearScale, xAxis);
 
-        circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis);
+        circlesGroup = renderXCircles(circlesGroup, xLinearScale, chosenXAxis);
 
         circleLabels
           .transition()
@@ -310,9 +320,9 @@ d3.csv("data.csv").then(function(data, err) {
 
         YLinearScale = yScale(data, chosenYAxis);
 
-        yAxis = renderAxes(yLinearScale, yAxis);
+        yAxis = renderYAxes(yLinearScale, yAxis);
 
-        circlesGroup = renderCircles(circlesGroup, yLinearScale, chosenYAxis);
+        circlesGroup = renderYCircles(circlesGroup, yLinearScale, chosenYAxis);
 
         circleLabels
           .transition()
