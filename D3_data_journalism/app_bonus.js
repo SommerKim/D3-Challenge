@@ -208,24 +208,24 @@ d3.csv("data.csv").then(function(data, err) {
     .attr("transform", "rotate(-90)");
 
   var obesityLabel = yLabelsGroup.append("text")
-    .attr("x", 0)
-    .attr("y", 20)
+    .attr("x", -150)
+    .attr("y", -80)
     .attr("value", "obesity")
     .classed("active", true)
     .classed("inactive", false)
     .text("Obesity (%)");
     
   var smokesLabel = yLabelsGroup.append("text")
-    .attr("x", 0)
-    .attr("y", 40)
+    .attr("x", -150)
+    .attr("y", -60)
     .attr("value", "smokes")
     .classed("active", false)
     .classed("inactive", true)
     .text("Smokes (%)");
 
   var healthcareLabel = yLabelsGroup.append("text")
-    .attr("x", 0)
-    .attr("y", 60)
+    .attr("x", -150)
+    .attr("y", -40)
     .attr("value", "healthcare")
     .classed("active", false)
     .classed("inactive", true)
