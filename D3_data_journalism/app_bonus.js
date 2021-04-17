@@ -90,30 +90,64 @@ function renderYCircles(circlesYGroup, newYScale, chosenYAxis) {
 }
 
 // function used for updating circles group with new tooltip
-function updateToolTip(chosenXAxis, circlesGroup) {
+function updateToolTip(chosenXAxis, chosenYAxis, circleLabels) {
 
-  var label;
+  var xlabel;
+  var ylabel;
 
   if (chosenXAxis === "poverty") {
-    label = "Poverty (%)";
+    if (chosenYAxis === "obesity") {
+      xlabel = "Poverty (%)"
+      ylabel = "Obesity (%)"
+    }
+    if (chosenYAxis === "smokes") {
+      xlabel = "Poverty (%)"
+      ylabel = "Smokes (%)"
+    }
+    if (chosenYAxis === "healthcare") {
+      xlabel = "Poverty (%)"
+      ylabel = "Lack of Healthcare (%)"
+    }
   }
   if (chosenXAxis === "age") {
-    label = "Age (Median)"
+    if (chosenYAxis === "obesity") {
+      xlabel = "Age (Median)"
+      ylabel = "Obesity (%)"
+    }
+    if (chosenYAxis === "smokes") {
+      xlabel = "Age (Median)"
+      ylabel = "Smokes (%)"
+    }
+    if (chosenYAxis === "healthcare") {
+      xlabel = "Age (Median)"
+      ylabel = "Lack of Healthcare (%)"
+    }
   }
   if (chosenXAxis === "income") {
-    label = "Household Income (Median)";
+    if (chosenYAxis === "obesity") {
+      xlabel = "Household Income (Median)"
+      ylabel = "Obesity (%)"
+    }
+    if (chosenYAxis === "smokes") {
+      xlabel = "Household Income (Median)"
+      ylabel = "Smokes (%)"
+    }
+    if (chosenYAxis === "healthcare") {
+      xlabel = "Household Income (Median)"
+      ylabel = "Lack of Healthcare (%)"
+    }
   }
 
   var toolTip = d3.tip()
     .attr("class", "d3-tip")
     .offset([5, -5])
     .html(function(d) {
-      return (`${label}: ${d[chosenXAxis]}`);
+      return (`${xlabel}: ${d[chosenXAxis]} <br> ${ylabel}: ${d[chosenYAxis]}`);
     });
 
-  circlesGroup.call(toolTip);
+  circleLabels.call(toolTip);
 
-  circlesGroup.on("mouseover", function(data) {
+  circleLabels.on("mouseover", function(data) {
     toolTip.show(data, this);
   })
     // onmouseout event
@@ -121,7 +155,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
       toolTip.hide(data);
     });
 
-  return circlesGroup;
+  return circleLabels;
 }
 
 // Retrieve data from the CSV file and execute everything below
@@ -158,10 +192,6 @@ d3.csv("data.csv").then(function(data, err) {
   var yAxis = chartGroup.append("g")
     .classed("y-axis", true)
     .call(leftAxis);
-
-  // // append y axis
-  // chartGroup.append("g")
-  //   .call(leftAxis);
 
   // append initial circles
   var circlesGroup = chartGroup.selectAll("circle")
@@ -241,16 +271,8 @@ d3.csv("data.csv").then(function(data, err) {
     .classed("inactive", true)
     .text("Lacks Healthcare (%)");
   
-
-  // chartGroup.append("text")
-  //   .attr("transform", "rotate(-90)")
-  //   .attr("y", 0 - margin.left)
-  //   .attr("x", 0 - (height / 2))
-  //   .attr("dy", "1em")
-  //   .text("Obesity (%)");
-
   // updateToolTip function above csv import
-  var circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+  var circleLabels = updateToolTip(chosenXAxis, chosenYAxis, circleLabels);
 
   // x axis labels event listener
   xLabelsGroup.selectAll("text")
@@ -272,7 +294,7 @@ d3.csv("data.csv").then(function(data, err) {
           .attr("x", d => xLinearScale(d[chosenXAxis]))
           .attr("y", d => yLinearScale(d[chosenYAxis]) + 4)
 
-        circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+        circleLabels = updateToolTip(chosenXAxis, chosenYAxis, circleLabels);
 
         if (chosenXAxis === "poverty") {
           povertyLabel
@@ -330,7 +352,7 @@ d3.csv("data.csv").then(function(data, err) {
           .attr("x", d => xLinearScale(d[chosenXAxis]))
           .attr("y", d => yLinearScale(d[chosenYAxis]) + 4)
 
-        circlesGroup = updateToolTip(chosenYAxis, circlesGroup);
+        circleLabels = updateToolTip(chosenXAxis, chosenYAxis, circleLabels);
 
       if (chosenYAxis === "obesity") {
         obesityLabel
