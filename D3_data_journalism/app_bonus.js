@@ -142,7 +142,7 @@ function updateToolTip(chosenXAxis, chosenYAxis, circleLabels) {
     .attr("class", "d3-tip")
     .offset([5, -5])
     .html(function(d) {
-      return (`${xlabel}: ${d[chosenXAxis]} <br> ${ylabel}: ${d[chosenYAxis]}`);
+      return (`${d.state}<br>${xlabel}: ${d[chosenXAxis]} <br> ${ylabel}: ${d[chosenYAxis]}`);
     });
 
   circleLabels.call(toolTip);
